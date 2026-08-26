@@ -64,7 +64,7 @@ function Login({setUser}) {
             const result = await signInWithPopup(auth,provider)
            const {displayName , email} = result.user
            const res = await axios.post(ServerUrl + "/api/auth/google" , { name:displayName , email} , {withCredentials:true})
-           // setUser(res.data)
+           setUser(res.data)
            toast.success("Login Successfully")
            navigate("/")
         } catch (error) {
