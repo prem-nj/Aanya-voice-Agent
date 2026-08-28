@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import axios from "axios";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from './Components/Navbar'
+import Builder from './pages/Builder'
+import Billing from './pages/Billing'
 
 export const ServerUrl = "http://localhost:8000";
 
@@ -31,13 +35,25 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
 
       <Route
         path="/login"
         element={<Login setUser={setUser} />}
       />
-    </Routes>
+      
+      <Route path="/*" element={<ProtectedRoute loading={loading} user={user}>
+        <Navbar setUser={setUser} user={user}/>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route paht="/billing" element={<Billing user={ user} setUser={setUser} />}/>
+          <Route paht="/builder" element={<Builder user={user} setUser={setUser} />}/>
+          <Route path="*" element={<Navigate to="/" replace/>} />
+        </Routes>
+
+
+      </ProtectedRoute>} />
+         </ Routes>
   );
 }
 
