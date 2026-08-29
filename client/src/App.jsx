@@ -4,11 +4,12 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import axios from "axios";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Navbar from './Components/Navbar'
+import Navbar from './components/Navbar'
 import Builder from './pages/Builder'
 import Billing from './pages/Billing'
 
 export const ServerUrl = "http://localhost:8000";
+export const CLIENT_URL = "http://localhost:5173"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -46,8 +47,8 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route paht="/billing" element={<Billing user={ user} setUser={setUser} />}/>
-          <Route paht="/builder" element={<Builder user={user} setUser={setUser} />}/>
+          <Route path="/billing" element={<Billing user={ user} setUser={setUser} />}/>
+          <Route path="/builder" element={<Builder user={user} setUser={setUser} />}/>
           <Route path="*" element={<Navigate to="/" replace/>} />
         </Routes>
 
