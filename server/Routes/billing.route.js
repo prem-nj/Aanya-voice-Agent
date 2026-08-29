@@ -1,6 +1,6 @@
 import express from "express"
 import { isAuth } from "../Middleware/isAuth.js"
-import { createOrder, verifyBilling } from "../Controllers/billing.controller.js"
+import { createOrder, verifyBilling } from "../controllers/billing.controller.js"
 
 
 const billingRouter = express.Router()
