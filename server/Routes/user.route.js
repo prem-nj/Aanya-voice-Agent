@@ -5,5 +5,5 @@ import { getCurrentUSer, saveAssistant } from "../controllers/user.controller.js
 const userRouter = express.Router()
 
 userRouter.get('/current-user', isAuth, getCurrentUSer)
-userRouter.get("/save-assistant",isAuth,saveAssistant)
+userRouter.post("/save-assistant",isAuth,saveAssistant)
 export default userRouter
