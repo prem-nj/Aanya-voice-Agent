@@ -8,7 +8,7 @@ import Navbar from './components/Navbar'
 import Builder from './pages/Builder'
 import Billing from './pages/Billing'
 
-export const ServerUrl = "http://localhost:8000";
+export const ServerUrl = "https://aanya-voice-agent.onrender.com";
 export const CLIENT_URL = "http://localhost:5173"
 
 function App() {
