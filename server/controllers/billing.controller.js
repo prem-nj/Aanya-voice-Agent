@@ -1,4 +1,4 @@
-import { razorpay } from "../Configs/razorpay.js"
+import { razorpay } from "../config/razorpay.js"
 import Billing from "../Models/billing.model.js"
 import crypto from "crypto"
 import User from "../Models/user.model.js"
