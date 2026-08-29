@@ -9,7 +9,7 @@ import Builder from './pages/Builder'
 import Billing from './pages/Billing'
 
 export const ServerUrl = "https://aanya-voice-agent.onrender.com";
-export const CLIENT_URL = "http://localhost:5173"
+export const CLIENT_URL = "https://aanya-voice-agent-1.onrender.com"
 
 function App() {
   const [user, setUser] = useState(null);
