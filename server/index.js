@@ -32,7 +32,7 @@ const privateCors =
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api/user", privateCors,userRouter)
-app.use("api/assistant",publicCors,assistantRouter)
+app.use("/api/assistant",publicCors,assistantRouter)
 
 app.use("/api/auth",privateCors,authRouter)
 
