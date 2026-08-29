@@ -340,7 +340,7 @@
     }
     else{
         status.innerText =
-      "Speech Recognition not supported";
+      "Speech Recognition not supported for this Browser";
     }
 
 
