@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import AssistantPreview from '../Components/AssistantPreview'
+import AssistantPreview from "../components/AssistantPreview"
 import logo from "../assets/logo.png"
 const STEPS = [
   {
@@ -125,7 +125,7 @@ function Home({ user }) {
             <div onClick={()=>navigate("/")} className='flex items-center gap-2.5'>
                     <img src={logo} alt="logo" className='h-9 w-auto object-contain' />
           
-                    <h1 className='font-bold text-xl text-gray-100 leading-none'>Shifra{" "}<span className='text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-emerald-500'>AI</span></h1>
+                    <h1 className='font-bold text-xl text-gray-100 leading-none'>Aanaya{" "}<span className='text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-emerald-500'>AI</span></h1>
           
                   </div>
 
@@ -134,7 +134,7 @@ function Home({ user }) {
           </div>
 
           <p className='text-gray-500 text-sm'>
-            © {new Date().getFullYear()} ShifraAI. All rights reserved.
+            © {new Date().getFullYear()} Aanaya. All rights reserved.
           </p>
            
         </div>
