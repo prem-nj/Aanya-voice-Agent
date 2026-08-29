@@ -9,18 +9,32 @@ import assistantRouter from "./Routes/assistant.route.js"
 dotenv.config()
 
 const app = express()
-app.use(cors({
-  origin: "http://localhost:5173",
-    credentials:true
-}))
+
+const privateCors =
+  cors({
+
+    origin: [
+      "http://localhost:5173"
+    ],
+
+    credentials: true
+
+  });
+
+  const publicCors =
+  cors({
+    origin: "*",
+  });
 
 
+
+  
 app.use(express.json())
 app.use(cookieParser())
-app.use("/api/user", userRouter)
-app.use("api/assistant",assistantRouter)
+app.use("/api/user", privateCors,userRouter)
+app.use("api/assistant",publicCors,assistantRouter)
 
-app.use("/api/auth",authRouter)
+app.use("/api/auth",privateCors,authRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on ${process.env.PORT}`)
