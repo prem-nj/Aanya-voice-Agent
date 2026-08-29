@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { FiCopy, FiPlus, FiTrash2 } from 'react-icons/fi';
-import { CLIENT_URL, ServerUrl } from '../App';
+import { CLIENT_URL, ServerUrl } from '../App.jsx';
 import toast from 'react-hot-toast';
 
 const THEMES = [
