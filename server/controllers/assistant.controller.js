@@ -76,16 +76,11 @@ export const askAssistant = async (req, res) => {
             if (wantsNavigation) {
 
                 // Find matching page
-                const matchedPage =
-                    user.pages.find((page) =>
-
-                        page.keywords.some((keyword) =>
-
-                            cleanMessage.includes(
-                                keyword.toLowerCase()
-                            )
-                        )
-                    );
+                const matchedPage = (user.pages ?? []).find((page) =>
+    (page.keywords ?? []).some((keyword) =>
+        cleanMessage.includes(String(keyword).toLowerCase())
+    )
+);
 
                 // Page found
                 if (matchedPage) {
