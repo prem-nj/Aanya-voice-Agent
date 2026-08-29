@@ -1,4 +1,5 @@
 import User from "../models/usermodel.js"
+import { generateGeminiResponse } from "../config/gemini.js"
 
 
 export const getAssistantConfig = async (req, res) => {
