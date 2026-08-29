@@ -15,7 +15,7 @@ const privateCors =
   cors({
 
     origin: [
-      "http://localhost:5173"
+      "https://aanya-voice-agent-1.onrender.com"
     ],
 
     credentials: true
