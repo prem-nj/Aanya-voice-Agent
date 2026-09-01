@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React from 'react'
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +18,7 @@ function Billing({ user ,setUser}) {
 
 
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
 

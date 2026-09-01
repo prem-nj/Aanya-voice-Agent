@@ -1,4 +1,3 @@
-import React from 'react'
 import { HiOutlineSparkles, HiOutlineMicrophone } from "react-icons/hi";
 import { HiOutlineBolt, HiOutlineCodeBracket } from "react-icons/hi2";
 import { FcGoogle } from "react-icons/fc";

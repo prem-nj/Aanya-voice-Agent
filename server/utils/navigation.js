@@ -52,11 +52,12 @@ export const resolveNavigation = (cleanMessage, pages) => {
     if (!isNavigationIntent(cleanMessage)) return null
 
     const matchedPage = (pages ?? []).find((page) => {
-        // Accept both plural "keywords" (current) and legacy "keyword".
+        // Accept both plural "keywords" (current) and legacy "keyword",
+        // plus the newer "aliases" field.
+        const aliases = page.aliases ?? []
         const keywords = page.keywords ?? page.keyword ?? []
-        return keywords.some((keyword) =>
-            cleanMessage.includes(normalizeText(keyword))
-        )
+        return [...keywords, ...aliases].some((term) =>
+            cleanMessage.includes(normalizeText(term)))
     })
 
     if (matchedPage) {

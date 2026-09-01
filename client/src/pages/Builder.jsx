@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React, { useState } from 'react'
-import { FiCopy, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { useState } from 'react'
+import { FiCopy, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { CLIENT_URL, ServerUrl } from '../App.jsx';
 import toast from 'react-hot-toast';
+import { useAssistant } from '../context/AssistantContext';
+import { parseTagList } from '../utils/navigationValidation';
 
 const THEMES = [
   "light",
@@ -34,40 +36,73 @@ function Builder({user , setUser}) {
 
   const [geminiApiKey , setGeminiApiKey] = useState(user?.geminiApiKey || "")
 
-  const [pages, setPages] = useState(user?.pages || []);
+  const {
+    navigationPages,
+    addNavigationPage,
+    updateNavigationPage,
+    removeNavigationPage,
+  } = useAssistant();
 
   const [pageName, setPageName] = useState("");
 
   const [pagePath, setPagePath] = useState("");
 
+  const [pageAliases, setPageAliases] = useState("");
+
   const [pageKeywords, setPageKeywords] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
+
+  const [formErrors, setFormErrors] = useState({});
 
   const [loading,setLoading]= useState(false)
 
-  const addPage = ()=>{
-    if(!pageName || !pagePath) return;
+  const resetPageForm = () => {
+    setPageName("");
+    setPagePath("");
+    setPageAliases("");
+    setPageKeywords("");
+    setEditingId(null);
+    setFormErrors({});
+  };
 
-    const newPage = {
-      name:pageName,
-      path:pagePath,
-      keywords:pageKeywords.split(",").map((k) => k.trim()) 
-      
-    
+  const addOrUpdatePage = () => {
+    const pageInput = {
+      name: pageName,
+      path: pagePath,
+      keywords: parseTagList(pageKeywords),
+      aliases: parseTagList(pageAliases),
+    };
+
+    const result = editingId
+      ? updateNavigationPage(editingId, pageInput)
+      : addNavigationPage(pageInput);
+
+    if (!result.ok) {
+      setFormErrors(result.errors || {});
+      return;
     }
 
-    setPages([...pages,newPage])
+    toast.success(editingId ? "Page updated" : "Page added");
+    resetPageForm();
+  };
 
-    setPageName("")
-    setPagePath("")
-    setPageKeywords("")
-    
-  }
+  const startEditingPage = (page) => {
+    setEditingId(page.id);
+    setPageName(page.name || "");
+    setPagePath(page.path || "");
+    setPageAliases((page.aliases || []).join(", "));
+    setPageKeywords((page.keywords || []).join(", "));
+    setFormErrors({});
+  };
 
-  const removePage = (index) =>{
-    const updatePages = pages.filter((_,i)=>i !== index)
+  const cancelEditing = () => resetPageForm();
 
-    setPages(updatePages)
-  }
+  const removePage = (id) => {
+    removeNavigationPage(id);
+    if (editingId === id) resetPageForm();
+    toast.success("Page removed");
+  };
 
 
   const saveAssistant = async () => {
@@ -81,7 +116,7 @@ function Builder({user , setUser}) {
         tone,
         theme,
         geminiApiKey,
-        pages,
+        pages: navigationPages,
       }
 
       const res = await axios.post(ServerUrl + "/api/user/save-assistant" , data , {withCredentials:true})
@@ -340,50 +375,93 @@ function Builder({user , setUser}) {
           </div>
 
           <div className='bg-white rounded-3xl border border-gray-100 shadow-sm p-6'>
-            <div className='flex items-center justify-between mb-5 flex-wrap'>
+            <div className='flex items-center justify-between mb-5 flex-wrap gap-3'>
               <div>
                 <h2 className='text-lg font-semibold'>Navigation Pages</h2>
                 <p className='text-sm text-gray-400'>
-                  Assistant can redirect users
+                  Assistant can redirect users by voice. Add routes, aliases and keywords.
                 </p>
               </div>
 
-              <button onClick={addPage} className='flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-sm'>
-                <FiPlus/>Add
+              <button onClick={addOrUpdatePage} className='flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-sm'>
+                <FiPlus/>{editingId ? "Update" : "Add"}
               </button>
             </div>
 
-            <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
-              <input type="text" placeholder='Page Name' className='border border-gray-200 rounded-2xl px-4 py-3'
-              onChange={(e)=>setPageName(e.target.value)}
-              value={[pageName]}/>
+            <div className='rounded-2xl border border-gray-100 bg-[#f8fafc] p-4 space-y-3'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                <div>
+                  <input type="text" placeholder='Page Name *' className='w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:border-purple-300'
+                  onChange={(e)=>setPageName(e.target.value)}
+                  value={pageName}/>
+                  {formErrors.name && <p className='text-xs text-red-500 mt-1'>{formErrors.name}</p>}
+                </div>
 
-              <input type="text" placeholder='/pricing' className='border border-gray-200 rounded-2xl px-4 py-3'
-              onChange={(e)=>setPagePath(e.target.value)}
-              value={[pagePath]}/>
+                <div>
+                  <input type="text" placeholder='/dashboard *' className='w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:border-purple-300'
+                  onChange={(e)=>setPagePath(e.target.value)}
+                  value={pagePath}/>
+                  {formErrors.path && <p className='text-xs text-red-500 mt-1'>{formErrors.path}</p>}
+                </div>
 
-              <input type="text" placeholder='Pricing  Plan' className='border border-gray-200 rounded-2xl px-4 py-3'
-              onChange={(e)=>setPageKeywords(e.target.value)}
-              value={[pageKeywords]}/>
+                <div>
+                  <input type="text" placeholder='Aliases (comma separated)' className='w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:border-purple-300'
+                  onChange={(e)=>setPageAliases(e.target.value)}
+                  value={pageAliases}/>
+                </div>
+
+                <div>
+                  <input type="text" placeholder='Keywords (comma separated)' className='w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:border-purple-300'
+                  onChange={(e)=>setPageKeywords(e.target.value)}
+                  value={pageKeywords}/>
+                </div>
+              </div>
+
+              {editingId && (
+                <div className='flex items-center gap-3'>
+                  <p className='text-sm text-purple-600'>Editing page…</p>
+                  <button onClick={cancelEditing} className='text-sm text-gray-500 hover:text-gray-700 cursor-pointer'>
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className='mt-5 space-y-3'>
               {
-                pages.map((page,index)=>(
-                  <div key={index}
-                  className='flex items-center justify-between border border-gray-100 rounded-2xl p-4'>
+                navigationPages.length === 0 ? (
+                  <p className='text-sm text-gray-400'>No navigation pages configured yet.</p>
+                ) : (
+                  navigationPages.map((page, index) => (
+                    <div key={page.id || index}
+                    className='flex items-center justify-between gap-3 border border-gray-100 rounded-2xl p-4'>
 
-                    <div>
-                      <p className='font-medium'>{page.name}</p>
-                      <p className='text-sm text-gray-400'>{page.path}</p>
-                  
+                      <div className='min-w-0'>
+                        <p className='font-medium'>{page.name}</p>
+                        <p className='text-sm text-gray-400'>{page.path}</p>
+
+                        {(page.aliases?.length > 0 || page.keywords?.length > 0) && (
+                          <p className='text-xs text-gray-400 mt-0.5 truncate'>
+                            {[
+                              page.aliases?.length ? `Aliases: ${page.aliases.join(', ')}` : null,
+                              page.keywords?.length ? `Keywords: ${page.keywords.join(', ')}` : null,
+                            ].filter(Boolean).join(' • ')}
+                          </p>
+                        )}
+
+                      </div>
+
+                      <div className='flex items-center gap-1 flex-shrink-0'>
+                        <button onClick={()=>startEditingPage(page)} aria-label={`Edit ${page.name}`} className='p-2 text-gray-500 hover:text-purple-500 rounded-lg cursor-pointer'>
+                          <FiEdit2/>
+                        </button>
+                        <button onClick={()=>removePage(page.id)} aria-label={`Delete ${page.name}`} className='p-2 text-red-500 hover:text-red-600 rounded-lg cursor-pointer'>
+                          <FiTrash2/>
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={()=>removePage(index)} className='text-red-500'>
-                      <FiTrash2/>
-
-                    </button>
-                  </div>
-                ))
+                  ))
+                )
               }
             </div>
           </div>

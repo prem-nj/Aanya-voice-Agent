@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import axios from "axios";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Navbar from './components/Navbar'
-import Builder from './pages/Builder'
-import Billing from './pages/Billing'
+import AppShell from "./components/AppShell";
+import Builder from "./pages/Builder";
+import Billing from "./pages/Billing";
+import { ServerUrl } from "./config";
 
-export const ServerUrl = "https://aanya-voice-agent.onrender.com";
-export const CLIENT_URL = "https://aanya-voice-agent-1.onrender.com"
+export { ServerUrl, CLIENT_URL } from "./config";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -43,17 +43,18 @@ function App() {
       />
       
       <Route path="/*" element={<ProtectedRoute loading={loading} user={user}>
-        <Navbar setUser={setUser} user={user}/>
+        <AppShell user={user} setUser={setUser}>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-           <Route path="/home" element={<Home />} />
-          <Route path="/billing" element={<Billing user={ user} setUser={setUser} />}/>
-          <Route path="/builder" element={<Builder user={user} setUser={setUser} />}/>
-          <Route path="*" element={<Navigate to="/" replace/>} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Home />} />
+             <Route path="/home" element={<Home />} />
+            <Route path="/billing" element={<Billing user={ user} setUser={setUser} />}/>
+            <Route path="/builder" element={<Builder user={user} setUser={setUser} />}/>
+            <Route path="*" element={<Navigate to="/" replace/>} />
+          </Routes>
 
 
+        </AppShell>
       </ProtectedRoute>} />
          </ Routes>
   );

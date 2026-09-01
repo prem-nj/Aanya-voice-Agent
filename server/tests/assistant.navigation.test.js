@@ -89,3 +89,11 @@ test("non-navigation messages return null (not treated as navigation)", () => {
   assert.equal(resolveNavigation(normalizeText("what is your pricing"), PAGES), null);
   assert.equal(resolveNavigation(normalizeText("hello"), PAGES), null);
 });
+test("aliases are matched as well as keywords", () => {
+  const pages = [
+    { name: "Dashboard", path: "/dashboard", keywords: [], aliases: ["home", "main"] },
+    { name: "Pricing", path: "/pricing", keywords: ["pricing", "plan"] },
+  ];
+  const nav = resolveNavigation(normalizeText("open the main page"), pages);
+  assert.deepEqual(nav, { path: "/dashboard", name: "Dashboard" });
+});
