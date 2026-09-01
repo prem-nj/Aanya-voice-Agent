@@ -4,7 +4,7 @@ const PageSchema = new mongoose.Schema(
   {
     name: String,
     path: String,
-    keyword: {
+    keywords: {
       type: [String],
       default: [],
     },

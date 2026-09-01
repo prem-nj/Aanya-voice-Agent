@@ -1,5 +1,6 @@
 import User from "../models/usermodel.js"
 import { generateGeminiResponse } from "../config/gemini.js"
+import { normalizeText, resolveNavigation } from "../utils/navigation.js"
 
 
 export const getAssistantConfig = async (req, res) => {
@@ -49,72 +50,48 @@ export const askAssistant = async (req, res) => {
             return res.status(400).json({ message: "Pro plan expired" })
         }
 
-        const cleanMessage = message.toLowerCase()
+        const cleanMessage = normalizeText(message)
 
         if (user.enableNavigation) {
 
-            // Navigation Commands
-            const navigationWords = [
+            // Resolve the target page for any navigation intent.
+            const navigation = resolveNavigation(
+                cleanMessage,
+                user.pages
+            )
 
-                "open",
-                "go",
-                "start",
-                "show",
-                "navigate",
-                "take me",
+            // Navigation request detected and a page was resolved
+            if (navigation) {
 
-            ];
+                // Already open
+                if (
+                    req.body.currentPath ===
+                    navigation.path
+                ) {
 
-            // Check navigation intent
-            const wantsNavigation =
-                navigationWords.some((word) =>
-
-                    cleanMessage.startsWith(word)
-                );
-
-            // User wants navigation
-            if (wantsNavigation) {
-
-                // Find matching page
-                const matchedPage = (user.pages ?? []).find((page) =>
-    (page.keywords ?? []).some((keyword) =>
-        cleanMessage.includes(String(keyword).toLowerCase())
-    )
-);
-
-                // Page found
-                if (matchedPage) {
-
-                    // Already open
-                    if (
-                        req.body.currentPath ===
-                        matchedPage.path
-                    ) {
-
-                        return res.json({
-
-                            success: true,
-
-                            response:
-                                `${matchedPage.name} already open`
-
-                        });
-                    }
-
-                    // Navigate
                     return res.json({
 
                         success: true,
 
-                        action: "navigate",
-
-                        path: matchedPage.path,
-
                         response:
-                            `Opening ${matchedPage.name}`,
+                            `${navigation.name} already open`
 
                     });
                 }
+
+                // Navigate
+                return res.json({
+
+                    success: true,
+
+                    action: "navigate",
+
+                    path: navigation.path,
+
+                    response:
+                        `Opening ${navigation.name}`,
+
+                });
             }
         }
 
