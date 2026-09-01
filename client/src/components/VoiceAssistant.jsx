@@ -33,6 +33,7 @@ const MESSAGE_STYLE = {
 
 export default function VoiceAssistant() {
   const {
+    assistantName,
     isOpen,
     isMinimized,
     messages,
@@ -102,7 +103,7 @@ export default function VoiceAssistant() {
       <button
         type="button"
         onClick={toggleOpen}
-        aria-label={isOpen ? "Close Anaya AI voice assistant" : "Open Anaya AI voice assistant"}
+        aria-label={isOpen ? `Close ${assistantName} voice assistant` : `Open ${assistantName} voice assistant`}
         aria-expanded={isOpen}
         className="fixed bottom-4 right-4 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-emerald-500 text-white shadow-[0_10px_30px_rgba(139,92,246,0.4)] transition-transform hover:scale-105"
       >
@@ -115,19 +116,19 @@ export default function VoiceAssistant() {
       {isOpen && (
         <div
           role="dialog"
-          aria-label="Anaya AI voice assistant"
+          aria-label={`${assistantName} voice assistant`}
           className="fixed bottom-20 right-4 z-50 flex max-h-[75vh] w-[calc(100vw-2rem)] max-w-[380px] flex-col overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
         >
           <div className="flex items-center justify-between gap-2 border-b border-orange-100 px-4 py-3">
             <div className="flex min-w-0 items-center gap-2.5">
               <div className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-emerald-500">
-                <span className="text-sm font-bold text-white">A</span>
+                <span className="text-sm font-bold text-white">{(assistantName || "A").charAt(0).toUpperCase()}</span>
                 {listening && (
                   <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold leading-tight text-gray-800">Anaya AI</p>
+                <p className="truncate text-sm font-semibold leading-tight text-gray-800">{assistantName}</p>
                 <p className="truncate text-[11px] leading-none text-gray-400">
                   {listening ? "Listening..." : isProcessing ? "Thinking..." : "Voice navigation assistant"}
                 </p>
@@ -196,7 +197,7 @@ export default function VoiceAssistant() {
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   placeholder={supported ? "Type or speak a command…" : "Type a command…"}
-                  aria-label="Command for Anaya AI"
+                  aria-label={`Command for ${assistantName}`}
                   className="min-w-0 flex-1 rounded-full border border-orange-100 bg-[#f8fafc] px-4 py-2 text-sm outline-none transition-colors focus:border-purple-300"
                 />
                 {supported ? (

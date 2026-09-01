@@ -49,6 +49,8 @@ export function AssistantProvider({ user, children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const assistantName = user?.assistantName || "Anaya AI";
+
   const [navigationPages, setNavigationPages] = useState(() => {
     const backend =
       user && Array.isArray(user.pages) && user.pages.length ? user.pages : null;
@@ -204,6 +206,7 @@ export function AssistantProvider({ user, children }) {
 const value = useMemo(
     () => ({
       navigationPages,
+      assistantName,
       addNavigationPage,
       updateNavigationPage,
       removeNavigationPage,
@@ -229,6 +232,7 @@ const value = useMemo(
     }),
     [
       navigationPages,
+      assistantName,
       addNavigationPage,
       updateNavigationPage,
       removeNavigationPage,
