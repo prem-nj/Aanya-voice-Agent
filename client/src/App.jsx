@@ -47,6 +47,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+           <Route path="/home" element={<Home />} />
           <Route path="/billing" element={<Billing user={ user} setUser={setUser} />}/>
           <Route path="/builder" element={<Builder user={user} setUser={setUser} />}/>
           <Route path="*" element={<Navigate to="/" replace/>} />
