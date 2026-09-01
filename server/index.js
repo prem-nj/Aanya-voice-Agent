@@ -11,12 +11,29 @@ dotenv.config()
 
 const app = express()
 
+// Origins allowed to call credential-based (private) endpoints.
+// Production client plus the common local Vite dev/preview origins.
+const privateOrigins = [
+  "https://aanya-voice-agent-1.onrender.com",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+  ...(process.env.CORS_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]
+
 const privateCors =
   cors({
-
-    origin: [
-      "https://aanya-voice-agent-1.onrender.com"
-    ],
+    origin: (origin, callback) => {
+      // Allow same-origin / server-to-server requests without an Origin header.
+      if (!origin || privateOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+      return callback(null, false)
+    },
 
     credentials: true
 

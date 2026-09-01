@@ -1,6 +1,20 @@
 import { genToken } from "../config/token.js";
 import User from "../models/usermodel.js";
 
+// Local origins (localhost) are same-site with a local API and cannot use
+// `SameSite=None; Secure` cookies over plain HTTP, so relax the cookie
+// attributes for them while keeping the strict cross-site config in prod.
+const isLocalOrigin = (req) =>
+  (req.headers.origin || "").includes("localhost") ||
+  (req.headers.origin || "").includes("127.0.0.1")
+
+const cookieOptions = (req) => ({
+  httpOnly: false,
+  secure: !isLocalOrigin(req),
+  sameSite: isLocalOrigin(req) ? "lax" : "none",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+})
+
 const googleAuth = async (req, res) => {
   try {
     const { name, email } = req.body;
@@ -22,12 +36,7 @@ const googleAuth = async (req, res) => {
 
     const token = await genToken(user._id);
 
-    res.cookie("token", token, {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, cookieOptions(req));
 
     return res.status(200).json(user);
   } catch (error) {
@@ -43,8 +52,8 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: false,
-      secure: true,
-      sameSite: "none",
+      secure: !isLocalOrigin(req),
+      sameSite: isLocalOrigin(req) ? "lax" : "none",
     });
 
     return res.status(200).json({

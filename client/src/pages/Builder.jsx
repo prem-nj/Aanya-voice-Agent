@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { FiCopy, FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { CLIENT_URL, ServerUrl } from '../App.jsx';
 import toast from 'react-hot-toast';
@@ -20,6 +21,8 @@ const TONES = [
 ];
 
 function Builder({user , setUser}) {
+
+  const navigate = useNavigate()
 
   const [editAssistant , setEditAssistant] = useState(!user?.isSetupComplete)
 
@@ -126,7 +129,13 @@ function Builder({user , setUser}) {
       toast.success("Assistant Saved Successfully")
       setLoading(false)
     } catch (error) {
-      toast.error("Failed to save assistant")
+      if (error?.response?.status === 401) {
+        toast.error("Your session has expired. Please log in again.")
+        setUser(null)
+        navigate("/login")
+      } else {
+        toast.error("Failed to save assistant")
+      }
       console.log(error)
       setLoading(false)
     }
